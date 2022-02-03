@@ -1,0 +1,93 @@
+{{- $wave := default "true" .Values.config.autorestart_associated_deployments -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  annotations:
+    {{- if $wave }}
+    wave.pusher.com/update-on-config-change: "true"
+    {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "common.selectorLabels" . | nindent 8 }}
+    spec:
+      imagePullSecrets:
+      {{- range .Values.images.PullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      serviceAccountName: {{ .Values.name }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.images.repository }}:{{ .Values.images.tag }}
+        imagePullPolicy: {{ default "Always" .Values.images.pullPolicy }}
+        {{ if .Values.service -}}
+        ports:
+          {{- range .Values.service.ports }}
+          - name: {{ .name }}
+            containerPort: {{ default .port .targetPort }}
+            protocol: {{ default "TCP" .protocol }}
+          {{- end }}
+          {{ end }}
+        envFrom:
+          {{- range .Values.config.configmaps }}
+          - configMapRef:
+              name: {{ . }}
+            {{- end }}
+        {{ if .Values.config.env }}
+        env:
+          {{- range .Values.config.env }}
+          - name: {{ .name }}
+            value: {{ .value }}
+          {{- end }}
+        {{ end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        {{ if .Values.livenessProbe}}
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 12 }}
+        {{ end }}
+        {{ if .Values.readinessProbe}}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 12 }}
+        {{ end }}
+      {{ if .Values.volume }}
+        volumeMounts:
+        {{- range .Values.volume }}
+        {{- $volname := .name -}}
+        {{- range .mounts }}
+        - mountPath: {{ .mountPath }}
+          name: {{ $volname }}
+          {{ if .subPath }}
+          subPath: {{ .subPath }}
+          {{- end }}
+          {{ end }}
+      volumes:
+      - name: {{  .name }}
+
+        {{ if eq .type "azurefile" }}
+        azureFile:
+          secretName: {{ .secretName }} 
+          shareName: {{ .shareName }} 
+          readOnly: false
+        {{ end }}
+        
+        {{ if eq .type "volumeClaim" }}
+        persistentVolumeClaim:
+          claimName: {{ .claimName}}
+        {{ end }}
+
+        {{ if eq .type "configMap" }}
+        configMap: 
+          name: {{.configMapsName}}
+        {{ end }}
+
+        {{- end }}
+      {{ end }}
