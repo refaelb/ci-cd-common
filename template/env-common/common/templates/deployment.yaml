@@ -1,0 +1,47 @@
+---
+# Source: common/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-name-received
+  labels:
+    helm.sh/chart: common-0.7.0
+    app.kubernetes.io/name: common
+    app.kubernetes.io/instance: common
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    wave.pusher.com/update-on-config-change: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: common
+      app.kubernetes.io/instance: common
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: common
+        app.kubernetes.io/instance: common
+    spec:
+      imagePullSecrets:
+      serviceAccountName: no-name-received
+      containers:
+      - name: common
+        image: nginx:latest
+        imagePullPolicy: Always
+        
+        envFrom:
+        
+        env:
+          - name: boolian
+            value: true
+          - name: string
+            value: string
+          - name: array
+            value: [shit allshit]
+          - name: json
+            value: { name: admin, age: true }
+        
+        resources:
+            null
