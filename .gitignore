@@ -1,7 +1,6 @@
 template
-fitcher.txt
-.gitignore
-fitcher.txt
 env-common
 volume-common
 configmap-common
+*.gitignore
+*.txt
