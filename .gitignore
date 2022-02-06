@@ -1,6 +1,0 @@
-template
-env-common
-volume-common
-configmap-common
-*.gitignore
-*.txt
