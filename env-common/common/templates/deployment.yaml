@@ -3,9 +3,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: no-name-received
+  name: env-test
   labels:
-    helm.sh/chart: common-0.7.0
+    helm.sh/chart: common-11.7.0
     app.kubernetes.io/name: common
     app.kubernetes.io/instance: common
     app.kubernetes.io/version: "1.16.0"
@@ -25,7 +25,7 @@ spec:
         app.kubernetes.io/instance: common
     spec:
       imagePullSecrets:
-      serviceAccountName: no-name-received
+      serviceAccountName: env-test
       containers:
       - name: common
         image: nginx:latest
@@ -33,22 +33,11 @@ spec:
         
         envFrom:
         
+        env:
+          - name: DEMO_ENV
+            value: hi there
+          - name: DEMO_ENV_2
+            value: hi again
+        
         resources:
             null
-        
-        
-      
-        volumeMounts:
-        - mountPath: my/shit/t.txt
-          name: test-name
-          
-          subPath: shit/path/t.txt
-          
-      volumes:
-      - name: test-name
-
-        
-        
-        
-        persistentVolumeClaim:
-          claimName: test-claim

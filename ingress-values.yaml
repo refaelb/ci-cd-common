@@ -1,4 +1,4 @@
-name: "no-name-received"
+name: "ingress-test"
 replicaCount: 1
 
 images:

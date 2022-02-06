@@ -1,4 +1,4 @@
-name: "no-name-received"
+name: "env-test"
 replicaCount: 1
 
 images:
@@ -9,16 +9,15 @@ images:
 config:
   configmaps: []
   env:
-    - name: boolian
-      value: "true"
-    - name: string
-      value: "string"
-    - name: array
-      value: ["shit","allshit"]
-    - name: json
-      value: "{
-        name: admin,
-        age: true 
-      }"
+    - name: DEMO_ENV
+      value: "hi there"
+    - name: DEMO_ENV_2
+      value: "hi again"
+
+    # - name: "json"
+    #   value: "{
+    #     name: admin,
+    #     age: true 
+    #   }"
 
 

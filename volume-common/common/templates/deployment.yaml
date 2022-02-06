@@ -3,9 +3,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: no-name-received
+  name: volume-test
   labels:
-    helm.sh/chart: common-0.7.0
+    helm.sh/chart: common-11.7.0
     app.kubernetes.io/name: common
     app.kubernetes.io/instance: common
     app.kubernetes.io/version: "1.16.0"
@@ -25,7 +25,7 @@ spec:
         app.kubernetes.io/instance: common
     spec:
       imagePullSecrets:
-      serviceAccountName: no-name-received
+      serviceAccountName: volume-test
       containers:
       - name: common
         image: nginx:latest
@@ -33,15 +33,22 @@ spec:
         
         envFrom:
         
-        env:
-          - name: boolian
-            value: true
-          - name: string
-            value: string
-          - name: array
-            value: [shit allshit]
-          - name: json
-            value: { name: admin, age: true }
-        
         resources:
             null
+        
+        
+      
+        volumeMounts:
+        - mountPath: my/shit/t.txt
+          name: test-name
+          
+          subPath: shit/path/t.txt
+          
+      volumes:
+      - name: test-name
+
+        
+        
+        
+        persistentVolumeClaim:
+          claimName: test-claim
